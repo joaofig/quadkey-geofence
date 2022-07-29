@@ -4,6 +4,8 @@ from matplotlib import pyplot as plt
 from dataclasses import dataclass
 from operator import attrgetter
 
+# Algorithm based on https://www.cs.rit.edu/~icss571/filling/how_to.html
+
 
 @dataclass
 class PolyVertex:
@@ -58,8 +60,8 @@ def build_edge(v0: PolyVertex, v1: PolyVertex) -> PolyEdge:
     return PolyEdge(y_min, y_max, x_min, incr)
 
 
-def generate_edges(vertices):
-    vx = vertices.copy()
+def edges_from_ring(ring):
+    vx = ring.copy()
     vx.append(vx[0])
 
     edges = []
@@ -91,18 +93,19 @@ def main():
     vertices = [PolyVertex(20, 30),
                 PolyVertex(80, 10),
                 PolyVertex(160, 60),
+                PolyVertex(140, 100),
                 PolyVertex(160, 180),
                 PolyVertex(80, 120),
                 PolyVertex(20, 150)
                 ]
-    edges = generate_edges(vertices)
+    edges = edges_from_ring(vertices)
 
     y_min = min(vertices, key=attrgetter("y")).y
     y_max = max(vertices, key=attrgetter("y")).y
     x_max = max(vertices, key=attrgetter("x")).x
     # print(edges)
 
-    bmp = np.zeros((y_max+1, x_max+1, 3), dtype=np.uint8)
+    bmp = np.full((y_max+1, x_max+1, 3), fill_value=[255, 255, 255], dtype=np.uint8)
 
     y_line = y_min
     active_edges = []
