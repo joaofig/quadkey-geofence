@@ -57,7 +57,7 @@ class PolyVertex:
 class ActiveEdge:
     __slots__ = ["y_max", "x", "incr"]
     y_max: int
-    x: int
+    x: float
     incr: float
 
     def __eq__(self, other):

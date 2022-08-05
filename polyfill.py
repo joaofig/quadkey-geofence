@@ -18,7 +18,7 @@ class PolyVertex:
 class ActiveEdge:
     __slots__ = ["y_max", "x", "incr"]
     y_max: int
-    x: int
+    x: float
     incr: float
 
     def __eq__(self, other):
@@ -46,7 +46,7 @@ class PolyEdge:
         return ActiveEdge(self.y_max, self.x_min, self.incr)
 
 
-def build_edge(v0: PolyVertex, v1: PolyVertex) -> PolyEdge:
+def build_edge(v0, v1):
     y_min = min(v0.y, v1.y)
     y_max = max(v0.y, v1.y)
     if v0.y < v1.y:
@@ -89,21 +89,12 @@ def remove_edges(active, y):
     return result
 
 
-def main():
-    vertices = [PolyVertex(20, 30),
-                PolyVertex(80, 10),
-                PolyVertex(160, 60),
-                PolyVertex(140, 100),
-                PolyVertex(160, 180),
-                PolyVertex(80, 120),
-                PolyVertex(20, 150)
-                ]
-    edges = edges_from_ring(vertices)
+def fill_polygon(polygon):
+    edges = edges_from_ring(polygon)
 
-    y_min = min(vertices, key=attrgetter("y")).y
-    y_max = max(vertices, key=attrgetter("y")).y
-    x_max = max(vertices, key=attrgetter("x")).x
-    # print(edges)
+    y_min = min(polygon, key=attrgetter("y")).y
+    y_max = max(polygon, key=attrgetter("y")).y
+    x_max = max(polygon, key=attrgetter("x")).x
 
     bmp = np.full((y_max+1, x_max+1, 3), fill_value=[255, 255, 255], dtype=np.uint8)
 
@@ -129,6 +120,19 @@ def main():
         y_line += 1
         for edge in active_edges:
             edge.x += edge.incr
+    return bmp
+
+
+def main():
+    polygon = [PolyVertex(20, 30),
+               PolyVertex(80, 10),
+               PolyVertex(160, 60),
+               PolyVertex(140, 100),
+               PolyVertex(160, 180),
+               PolyVertex(80, 120),
+               PolyVertex(20, 150)
+               ]
+    bmp = fill_polygon(polygon)
 
     plt.imshow(bmp, interpolation='nearest')
     plt.show()

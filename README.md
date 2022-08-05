@@ -17,7 +17,7 @@ Note that you must select the country name in the source file.
 
 The `polyfill.py` file contains code to illustrate how a scanline polygon
 filling algorithm works, without the geospatial intricacies.
-It uses a `NumPy` array as the bitmap and displays it at the end.
+It uses a `NumPy` array as the drawable bitmap and displays it at the end.
 
 The two Jupyter notebooks generate the images used in the article.
 You can only run the `qk-geofence.ipynb` notebook after running the 
