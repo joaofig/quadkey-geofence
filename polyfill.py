@@ -10,15 +10,15 @@ from operator import attrgetter
 @dataclass
 class PolyVertex:
     __slots__ = ["x", "y"]
-    x: float
-    y: float
+    x: int
+    y: int
 
 
 @dataclass
 class ActiveEdge:
     __slots__ = ["y_max", "x", "incr"]
-    y_max: float
-    x: float
+    y_max: int
+    x: int
     incr: float
 
     def __eq__(self, other):
@@ -31,9 +31,9 @@ class ActiveEdge:
 @dataclass
 class PolyEdge:
     __slots__ = ["y_min", "y_max", "x_min", "incr"]
-    y_min: float
-    y_max: float
-    x_min: float
+    y_min: int
+    y_max: int
+    x_min: int
     incr: float
 
     def __eq__(self, other):
@@ -107,10 +107,9 @@ def main():
 
     bmp = np.full((y_max+1, x_max+1, 3), fill_value=[255, 255, 255], dtype=np.uint8)
 
-    y_line = y_min
     active_edges = []
 
-    while y_line < y_max:
+    for y_line in range(y_min, y_max):
         active_edges.extend(insert_edges(edges, y_line))
         active_edges = sorted(remove_edges(active_edges, y_line))
 
@@ -125,7 +124,6 @@ def main():
                 i += 1
 
                 for x in range(round(edge0.x), math.floor(edge1.x) + 1):
-                    # print(f"({x}, {y_line})")
                     bmp[y_line, x] = [0, 0, 255]
 
         y_line += 1

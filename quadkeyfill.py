@@ -49,15 +49,15 @@ class AreaDb(BaseDb):
 @dataclass
 class PolyVertex:
     __slots__ = ["x", "y"]
-    x: float
-    y: float
+    x: int
+    y: int
 
 
 @dataclass
 class ActiveEdge:
     __slots__ = ["y_max", "x", "incr"]
-    y_max: float
-    x: float
+    y_max: int
+    x: int
     incr: float
 
     def __eq__(self, other):
@@ -70,9 +70,9 @@ class ActiveEdge:
 @dataclass
 class PolyEdge:
     __slots__ = ["y_min", "y_max", "x_min", "incr"]
-    y_min: float
-    y_max: float
-    x_min: float
+    y_min: int
+    y_max: int
+    x_min: int
     incr: float
 
     def __eq__(self, other):
@@ -109,17 +109,17 @@ class Borders:
         return country
 
 
-def build_edge(v0: PolyVertex, v1: PolyVertex) -> PolyEdge:
-    y_min = min(v0.y, v1.y)
-    y_max = max(v0.y, v1.y)
-    if v0.y < v1.y:
-        x_min = v0.x
+def build_edge(vertex0, vertex1):
+    y_min = min(vertex0.y, vertex1.y)
+    y_max = max(vertex0.y, vertex1.y)
+    if vertex0.y < vertex1.y:
+        x_min = vertex0.x
     else:
-        x_min = v1.x
-    if v0.x == v1.x:
+        x_min = vertex1.x
+    if vertex0.x == vertex1.x:
         incr = 0.0
     else:
-        incr = (v1.x - v0.x) / (v1.y - v0.y)    # 1/m
+        incr = (vertex1.x - vertex0.x) / (vertex1.y - vertex0.y)    # 1/m
     return PolyEdge(y_min, y_max, x_min, incr)
 
 
@@ -141,8 +141,8 @@ def insert_edges(edges, y):
     return result
 
 
-def remove_edges(active, y):
-    result = [edge for edge in active if edge.y_max != y]
+def remove_edges(active_edges, y):
+    result = [edge for edge in active_edges if edge.y_max != y]
     return result
 
 
@@ -152,7 +152,6 @@ def to_poly_vertex(latitude, longitude, level):
     """
     qk = quadkey.from_geo((latitude, longitude), level)
     tile = qk.to_tile()[0]
-    # test = qk_to_str(tile_to_qk(tile[0], tile[1], level), level)
     return PolyVertex(tile[0], tile[1])
 
 
@@ -203,11 +202,9 @@ def insert_qk(area, qk, level):
 
             qk = qk >> 2
             level -= 1
-            # area = insert_qk(area, qk >> 2, level - 1)
         else:
             z.add(qk)
             inflating = False
-
     return area
 
 
@@ -226,24 +223,24 @@ def plot1(area, x_range, y, level):
     return area
 
 
-def fill_multi_polygon(multi_polygon, level):
-    area = dict()
+def get_edges(multi_polygon):
     edges = []
     y_max = -sys.maxsize - 1
     y_min = sys.maxsize
-    x_max = -sys.maxsize - 1
 
     for ring in multi_polygon:
         y_min = min(y_min, min(ring, key=attrgetter("y")).y)
         y_max = max(y_max, max(ring, key=attrgetter("y")).y)
-        x_max = max(x_max, max(ring, key=attrgetter("x")).x)
-
         edges.extend(edges_from_ring(ring))
+    return edges, y_min, y_max
 
-    y_line = y_min
+
+def fill_multi_polygon(multi_polygon, level):
+    area = dict()
+    edges, y_min, y_max = get_edges(multi_polygon)
     active_edges = []
 
-    while y_line < y_max:
+    for y_line in range(y_min, y_max):
         active_edges.extend(insert_edges(edges, y_line))
         active_edges = sorted(remove_edges(active_edges, y_line))
 
@@ -263,7 +260,6 @@ def fill_multi_polygon(multi_polygon, level):
                 else:
                     area = plot1(area, x_range, y_line, level)
 
-        y_line += 1
         for edge in active_edges:
             edge.x += edge.incr
     return area

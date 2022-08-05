@@ -23,6 +23,7 @@ fastjsonschema==2.16.1
 folium==0.12.1.post1
 fonttools==4.34.4
 geojson==2.5.0
+h3==3.7.4
 idna==3.3
 ipykernel==6.15.1
 ipython==8.4.0
