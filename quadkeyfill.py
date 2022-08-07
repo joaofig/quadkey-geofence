@@ -137,13 +137,11 @@ def edges_from_ring(ring):
 
 
 def insert_edges(edges, y):
-    result = [edge.to_active() for edge in edges if edge.y_min == y]
-    return result
+    return [edge.to_active() for edge in edges if edge.y_min == y]
 
 
 def remove_edges(active_edges, y):
-    result = [edge for edge in active_edges if edge.y_max != y]
-    return result
+    return [edge for edge in active_edges if edge.y_max != y]
 
 
 def to_poly_vertex(latitude, longitude, level):

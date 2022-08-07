@@ -74,19 +74,11 @@ def edges_from_ring(ring):
 
 
 def insert_edges(edges, y):
-    result = []
-    for edge in edges:
-        if edge.y_min == y:
-            result.append(edge.to_active())
-    return result
+    return [edge.to_active() for edge in edges if edge.y_min == y]
 
 
-def remove_edges(active, y):
-    result = []
-    for edge in active:
-        if edge.y_max != y:
-            result.append(edge)
-    return result
+def remove_edges(active_edges, y):
+    return [edge for edge in active_edges if edge.y_max != y]
 
 
 def fill_polygon(polygon):
@@ -117,7 +109,6 @@ def fill_polygon(polygon):
                 for x in range(round(edge0.x), math.floor(edge1.x) + 1):
                     bmp[y_line, x] = [0, 0, 255]
 
-        y_line += 1
         for edge in active_edges:
             edge.x += edge.incr
     return bmp

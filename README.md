@@ -8,7 +8,7 @@ This project implements Python code to create geofences using quadkeys.
 Start by creating the supporting SQLite database on the `data` folder, named
 `qk-geofences.db`.
 Run the scripts from the `sql` folder in the following order: `geo_fence.sql`, 
-`geo_square.sql`, and `ix_geo_square_fence_level.sql`.
+`geo_square.sql`, and `ix_geo_square_square_qk.sql`.
 Download the country borders data file from the [datasets/geo-countries](https://github.com/datasets/geo-countries)
 GitHub repository, and place the `countries.geojson` file in the `data` folder.
 Now you can run the code that generates a country's geofence as a hierarchical
@@ -18,6 +18,10 @@ Note that you must select the country name in the source file.
 The `polyfill.py` file contains code to illustrate how a scanline polygon
 filling algorithm works, without the geospatial intricacies.
 It uses a `NumPy` array as the drawable bitmap and displays it at the end.
+
+The `query.py` script contains sample code on how to query the resulting
+database. It takes as input a latitude and longitude pair and displays
+a (possibly empty) list of matching geofences.
 
 The two Jupyter notebooks generate the images used in the article.
 You can only run the `qk-geofence.ipynb` notebook after running the 
